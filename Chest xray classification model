@@ -1,0 +1,847 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/a-singh03/DL-NLP/blob/main/Chest%20xray%20classification%20model\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "059694fc",
+      "metadata": {
+        "id": "059694fc"
+      },
+      "outputs": [],
+      "source": [
+        "import tensorflow as tf"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "9d490e5b",
+      "metadata": {
+        "id": "9d490e5b"
+      },
+      "outputs": [],
+      "source": [
+        "from tensorflow.keras.models import Sequential\n",
+        "from tensorflow.keras.layers import Conv2D, MaxPool2D\n",
+        "from tensorflow.keras.layers import Activation, Dropout, Flatten, Dense, Input\n",
+        "from tensorflow.keras.preprocessing.image import ImageDataGenerator"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "a1311bbf",
+      "metadata": {
+        "id": "a1311bbf"
+      },
+      "outputs": [],
+      "source": [
+        "train_data_dir = 'D:\\\\chest_xray\\\\train'\n",
+        "test_data_dir =  'D:\\\\chest_xray\\\\test'\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "677d0634",
+      "metadata": {
+        "id": "677d0634",
+        "outputId": "b334fe4c-4839-42f9-9653-af8a3c8dd517"
+      },
+      "outputs": [
+        {
+          "data": {
+            "text/plain": [
+              "'D:\\\\chest_xray\\\\test'"
+            ]
+          },
+          "execution_count": 199,
+          "metadata": {},
+          "output_type": "execute_result"
+        }
+      ],
+      "source": [
+        "test_data_dir"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "aecec34a",
+      "metadata": {
+        "id": "aecec34a"
+      },
+      "outputs": [],
+      "source": [
+        "nb_train_samples = 4000"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "a21fc820",
+      "metadata": {
+        "id": "a21fc820"
+      },
+      "outputs": [],
+      "source": [
+        "validation_data_dir = 'D:\\\\chest_xray\\\\val'"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "28d42627",
+      "metadata": {
+        "id": "28d42627"
+      },
+      "outputs": [],
+      "source": [
+        "nb_validation_samples = 20"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "d09dcda1",
+      "metadata": {
+        "id": "d09dcda1"
+      },
+      "outputs": [],
+      "source": [
+        "batch_size = 8"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "640f1d41",
+      "metadata": {
+        "id": "640f1d41"
+      },
+      "outputs": [],
+      "source": [
+        "epochs = 5"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "764b01ef",
+      "metadata": {
+        "id": "764b01ef"
+      },
+      "outputs": [],
+      "source": [
+        "test_generator_samples = 500"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "109da7bd",
+      "metadata": {
+        "id": "109da7bd"
+      },
+      "outputs": [],
+      "source": [
+        "test_batch_size = 16"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "715b65d5",
+      "metadata": {
+        "id": "715b65d5"
+      },
+      "outputs": [],
+      "source": [
+        "img_width, img_height = 200, 200\n",
+        "input_shape = (img_width, img_height, 3)"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "e161f8a2",
+      "metadata": {
+        "id": "e161f8a2"
+      },
+      "outputs": [],
+      "source": [
+        "model = Sequential()"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "750ae21a",
+      "metadata": {
+        "id": "750ae21a"
+      },
+      "outputs": [],
+      "source": [
+        "model.add(Input(shape = input_shape ))"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "e9bea86b",
+      "metadata": {
+        "id": "e9bea86b"
+      },
+      "outputs": [],
+      "source": [
+        "model.add(Conv2D( filters=32,\n",
+        "\n",
+        "                 kernel_size=(3, 3),\n",
+        "                 strides = (1,1),\n",
+        "                 input_shape=input_shape,\n",
+        "                 use_bias=True,\n",
+        "                 padding='valid',\n",
+        "                 name=\"Ist_conv_layer\"\n",
+        "                )\n",
+        "         )"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "5ccaad42",
+      "metadata": {
+        "id": "5ccaad42",
+        "outputId": "70ef3a56-64fe-4db3-e07f-0c3b2eac3506"
+      },
+      "outputs": [
+        {
+          "name": "stdout",
+          "output_type": "stream",
+          "text": [
+            "Model: \"sequential_5\"\n",
+            "_________________________________________________________________\n",
+            " Layer (type)                Output Shape              Param #   \n",
+            "=================================================================\n",
+            " Ist_conv_layer (Conv2D)     (None, 198, 198, 32)      896       \n",
+            "                                                                 \n",
+            "=================================================================\n",
+            "Total params: 896\n",
+            "Trainable params: 896\n",
+            "Non-trainable params: 0\n",
+            "_________________________________________________________________\n"
+          ]
+        }
+      ],
+      "source": [
+        "model.summary()"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "48374545",
+      "metadata": {
+        "id": "48374545"
+      },
+      "outputs": [],
+      "source": [
+        "model.add(Activation('relu'))"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "65f51251",
+      "metadata": {
+        "id": "65f51251"
+      },
+      "outputs": [],
+      "source": [
+        "model.add(MaxPool2D(pool_size=(2, 2)))"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "d9d081fa",
+      "metadata": {
+        "id": "d9d081fa"
+      },
+      "outputs": [],
+      "source": [
+        "model.add(Conv2D(32,\n",
+        "                (3, 3),\n",
+        "                activation = 'selu',\n",
+        "                name = \"IInd_con_layer\"))"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "9c8260a8",
+      "metadata": {
+        "id": "9c8260a8",
+        "outputId": "9cbce8a1-553b-4b0d-9a55-bd5b290dbdac"
+      },
+      "outputs": [
+        {
+          "name": "stdout",
+          "output_type": "stream",
+          "text": [
+            "Model: \"sequential_5\"\n",
+            "_________________________________________________________________\n",
+            " Layer (type)                Output Shape              Param #   \n",
+            "=================================================================\n",
+            " Ist_conv_layer (Conv2D)     (None, 198, 198, 32)      896       \n",
+            "                                                                 \n",
+            " activation_18 (Activation)  (None, 198, 198, 32)      0         \n",
+            "                                                                 \n",
+            " max_pooling2d_15 (MaxPoolin  (None, 99, 99, 32)       0         \n",
+            " g2D)                                                            \n",
+            "                                                                 \n",
+            " IInd_con_layer (Conv2D)     (None, 97, 97, 32)        9248      \n",
+            "                                                                 \n",
+            "=================================================================\n",
+            "Total params: 10,144\n",
+            "Trainable params: 10,144\n",
+            "Non-trainable params: 0\n",
+            "_________________________________________________________________\n"
+          ]
+        }
+      ],
+      "source": [
+        "model.summary()"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "85182e9d",
+      "metadata": {
+        "id": "85182e9d"
+      },
+      "outputs": [],
+      "source": [
+        "model.add(MaxPool2D(pool_size=(2, 2)))"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "bba6349c",
+      "metadata": {
+        "id": "bba6349c"
+      },
+      "outputs": [],
+      "source": [
+        "model.add(Conv2D(64, (3, 3), name = \"IIIrd_conv_layer\"))"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "d3579d61",
+      "metadata": {
+        "id": "d3579d61"
+      },
+      "outputs": [],
+      "source": [
+        "model.add(Activation('relu'))"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "3fed953f",
+      "metadata": {
+        "id": "3fed953f"
+      },
+      "outputs": [],
+      "source": [
+        "model.add(MaxPool2D(pool_size=(2, 2)))"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "7fe9a000",
+      "metadata": {
+        "id": "7fe9a000"
+      },
+      "outputs": [],
+      "source": [
+        "model.add(Flatten(name = \"FlattenedLayer\"))"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "07cbef07",
+      "metadata": {
+        "id": "07cbef07",
+        "outputId": "ad3b1d78-a64d-4068-d04a-5aad63b74c91"
+      },
+      "outputs": [
+        {
+          "name": "stdout",
+          "output_type": "stream",
+          "text": [
+            "Model: \"sequential_5\"\n",
+            "_________________________________________________________________\n",
+            " Layer (type)                Output Shape              Param #   \n",
+            "=================================================================\n",
+            " Ist_conv_layer (Conv2D)     (None, 198, 198, 32)      896       \n",
+            "                                                                 \n",
+            " activation_18 (Activation)  (None, 198, 198, 32)      0         \n",
+            "                                                                 \n",
+            " max_pooling2d_15 (MaxPoolin  (None, 99, 99, 32)       0         \n",
+            " g2D)                                                            \n",
+            "                                                                 \n",
+            " IInd_con_layer (Conv2D)     (None, 97, 97, 32)        9248      \n",
+            "                                                                 \n",
+            " max_pooling2d_16 (MaxPoolin  (None, 48, 48, 32)       0         \n",
+            " g2D)                                                            \n",
+            "                                                                 \n",
+            " IIIrd_conv_layer (Conv2D)   (None, 46, 46, 64)        18496     \n",
+            "                                                                 \n",
+            " activation_19 (Activation)  (None, 46, 46, 64)        0         \n",
+            "                                                                 \n",
+            " max_pooling2d_17 (MaxPoolin  (None, 23, 23, 64)       0         \n",
+            " g2D)                                                            \n",
+            "                                                                 \n",
+            " FlattenedLayer (Flatten)    (None, 33856)             0         \n",
+            "                                                                 \n",
+            "=================================================================\n",
+            "Total params: 28,640\n",
+            "Trainable params: 28,640\n",
+            "Non-trainable params: 0\n",
+            "_________________________________________________________________\n"
+          ]
+        }
+      ],
+      "source": [
+        "model.summary()"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "35a23e42",
+      "metadata": {
+        "id": "35a23e42"
+      },
+      "outputs": [],
+      "source": [
+        "model.add(Dense(64))"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "de05331f",
+      "metadata": {
+        "id": "de05331f"
+      },
+      "outputs": [],
+      "source": [
+        "\n",
+        "model.add(Activation('relu'))\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "fb9a8b41",
+      "metadata": {
+        "id": "fb9a8b41"
+      },
+      "outputs": [],
+      "source": [
+        "model.add(Dropout(0.2))"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "8cb6e881",
+      "metadata": {
+        "id": "8cb6e881"
+      },
+      "outputs": [],
+      "source": [
+        "model.add(Dense(1))"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "360c29df",
+      "metadata": {
+        "id": "360c29df"
+      },
+      "outputs": [],
+      "source": [
+        "model.add(Activation('sigmoid'))"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "ac0a93e3",
+      "metadata": {
+        "id": "ac0a93e3",
+        "outputId": "f070f1ed-5950-44cd-b24e-dee10d501a25"
+      },
+      "outputs": [
+        {
+          "name": "stdout",
+          "output_type": "stream",
+          "text": [
+            "Model: \"sequential_5\"\n",
+            "_________________________________________________________________\n",
+            " Layer (type)                Output Shape              Param #   \n",
+            "=================================================================\n",
+            " Ist_conv_layer (Conv2D)     (None, 198, 198, 32)      896       \n",
+            "                                                                 \n",
+            " activation_18 (Activation)  (None, 198, 198, 32)      0         \n",
+            "                                                                 \n",
+            " max_pooling2d_15 (MaxPoolin  (None, 99, 99, 32)       0         \n",
+            " g2D)                                                            \n",
+            "                                                                 \n",
+            " IInd_con_layer (Conv2D)     (None, 97, 97, 32)        9248      \n",
+            "                                                                 \n",
+            " max_pooling2d_16 (MaxPoolin  (None, 48, 48, 32)       0         \n",
+            " g2D)                                                            \n",
+            "                                                                 \n",
+            " IIIrd_conv_layer (Conv2D)   (None, 46, 46, 64)        18496     \n",
+            "                                                                 \n",
+            " activation_19 (Activation)  (None, 46, 46, 64)        0         \n",
+            "                                                                 \n",
+            " max_pooling2d_17 (MaxPoolin  (None, 23, 23, 64)       0         \n",
+            " g2D)                                                            \n",
+            "                                                                 \n",
+            " FlattenedLayer (Flatten)    (None, 33856)             0         \n",
+            "                                                                 \n",
+            " dense_8 (Dense)             (None, 64)                2166848   \n",
+            "                                                                 \n",
+            " activation_20 (Activation)  (None, 64)                0         \n",
+            "                                                                 \n",
+            " dropout_3 (Dropout)         (None, 64)                0         \n",
+            "                                                                 \n",
+            " dense_9 (Dense)             (None, 1)                 65        \n",
+            "                                                                 \n",
+            " activation_21 (Activation)  (None, 1)                 0         \n",
+            "                                                                 \n",
+            "=================================================================\n",
+            "Total params: 2,195,553\n",
+            "Trainable params: 2,195,553\n",
+            "Non-trainable params: 0\n",
+            "_________________________________________________________________\n"
+          ]
+        }
+      ],
+      "source": [
+        "model.summary()"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "bcfca96d",
+      "metadata": {
+        "id": "bcfca96d"
+      },
+      "outputs": [],
+      "source": [
+        "model.compile(\n",
+        "              loss='binary_crossentropy',\n",
+        "              optimizer='adam',\n",
+        "              metrics=['accuracy'])"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "b6648ff7",
+      "metadata": {
+        "id": "b6648ff7"
+      },
+      "outputs": [],
+      "source": [
+        "tr_dtgen = ImageDataGenerator(\n",
+        "                              rescale=1. / 255,\n",
+        "                              shear_range=0.2,\n",
+        "                              zoom_range=0.2,\n",
+        "                              horizontal_flip=True,\n",
+        "                              )"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "50ba7938",
+      "metadata": {
+        "id": "50ba7938",
+        "outputId": "0347e8d4-b333-44e2-9743-31752251ee47"
+      },
+      "outputs": [
+        {
+          "name": "stdout",
+          "output_type": "stream",
+          "text": [
+            "Found 5216 images belonging to 2 classes.\n"
+          ]
+        }
+      ],
+      "source": [
+        "train_generator = tr_dtgen.flow_from_directory(\n",
+        "                                               train_data_dir,\n",
+        "                                               target_size=(img_width, img_height),\n",
+        "                                               batch_size=batch_size,\n",
+        "                                               class_mode='binary'\n",
+        "\n",
+        "                                                )\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "08d2c5c6",
+      "metadata": {
+        "id": "08d2c5c6"
+      },
+      "outputs": [],
+      "source": [
+        "val_dtgen = ImageDataGenerator(rescale=1. / 255)"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "e27cb4b2",
+      "metadata": {
+        "id": "e27cb4b2",
+        "outputId": "cfc09abc-ef99-4340-c457-c2eda274e023"
+      },
+      "outputs": [
+        {
+          "name": "stdout",
+          "output_type": "stream",
+          "text": [
+            "Found 16 images belonging to 2 classes.\n"
+          ]
+        }
+      ],
+      "source": [
+        "validation_generator = val_dtgen.flow_from_directory(\n",
+        "                                                     validation_data_dir,\n",
+        "                                                     target_size=(img_width, img_height),   # Resize images\n",
+        "                                                     batch_size=batch_size,    # batch size to augment at a time\n",
+        "                                                     class_mode='binary'  # Return 1D array of class labels\n",
+        "                                                     )"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "a1749a37",
+      "metadata": {
+        "id": "a1749a37"
+      },
+      "outputs": [],
+      "source": [
+        "from sklearn import metrics\n",
+        "import time"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "4f4a907e",
+      "metadata": {
+        "id": "4f4a907e",
+        "outputId": "a9831d88-40f7-4b2d-b45c-342e2eb9b294"
+      },
+      "outputs": [
+        {
+          "name": "stdout",
+          "output_type": "stream",
+          "text": [
+            "Epoch 1/5\n"
+          ]
+        },
+        {
+          "name": "stderr",
+          "output_type": "stream",
+          "text": [
+            "C:\\Users\\035011\\AppData\\Local\\Temp\\ipykernel_35632\\1383158479.py:2: UserWarning: `Model.fit_generator` is deprecated and will be removed in a future version. Please use `Model.fit`, which supports generators.\n",
+            "  history = model.fit_generator(\n"
+          ]
+        },
+        {
+          "name": "stdout",
+          "output_type": "stream",
+          "text": [
+            "500/500 [==============================] - 80s 158ms/step - loss: 0.3921 - accuracy: 0.8322 - val_loss: 0.7137 - val_accuracy: 0.8125\n",
+            "Epoch 2/5\n",
+            "500/500 [==============================] - 80s 159ms/step - loss: 0.2563 - accuracy: 0.8913 - val_loss: 0.5865 - val_accuracy: 0.8125\n",
+            "Epoch 3/5\n",
+            "500/500 [==============================] - 79s 158ms/step - loss: 0.2366 - accuracy: 0.9065 - val_loss: 0.6870 - val_accuracy: 0.7500\n",
+            "Epoch 4/5\n",
+            "500/500 [==============================] - 79s 158ms/step - loss: 0.2174 - accuracy: 0.9115 - val_loss: 0.8445 - val_accuracy: 0.6875\n",
+            "Epoch 5/5\n",
+            "500/500 [==============================] - 79s 157ms/step - loss: 0.1977 - accuracy: 0.9212 - val_loss: 0.5773 - val_accuracy: 0.8125\n"
+          ]
+        },
+        {
+          "data": {
+            "text/plain": [
+              "6.614566047986348"
+            ]
+          },
+          "execution_count": 234,
+          "metadata": {},
+          "output_type": "execute_result"
+        }
+      ],
+      "source": [
+        "start = time.time()\n",
+        "history = model.fit_generator(\n",
+        "                              # First argument is always data generator\n",
+        "                              generator = train_generator,\n",
+        "                              # How many batches per epoch?\n",
+        "                              # Can be any number as generator loops indefinitely\n",
+        "                              steps_per_epoch=nb_train_samples // batch_size,\n",
+        "                              # No of epochs\n",
+        "                              epochs=epochs,\n",
+        "                              # Get validation data from validation generator\n",
+        "                              validation_data=validation_generator,\n",
+        "                              verbose = 1,\n",
+        "                              validation_steps=nb_validation_samples // batch_size\n",
+        "                              )\n",
+        "\n",
+        "end = time.time()\n",
+        "(end - start)/60"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "25008019",
+      "metadata": {
+        "id": "25008019",
+        "outputId": "eddc2171-8f36-43a3-c8e7-551cb140cad5"
+      },
+      "outputs": [
+        {
+          "name": "stdout",
+          "output_type": "stream",
+          "text": [
+            "2/2 [==============================] - 0s 86ms/step - loss: 0.5773 - accuracy: 0.8125\n"
+          ]
+        },
+        {
+          "data": {
+            "text/plain": [
+              "[0.5773131847381592, 0.8125]"
+            ]
+          },
+          "execution_count": 237,
+          "metadata": {},
+          "output_type": "execute_result"
+        }
+      ],
+      "source": [
+        "result = model.evaluate(\n",
+        "                        validation_generator,\n",
+        "                        verbose = 1,\n",
+        "                        steps = 2\n",
+        "                        )\n",
+        "result"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "eb1b73af",
+      "metadata": {
+        "id": "eb1b73af",
+        "outputId": "e85061f0-902c-4848-fb20-a5c8eaf1d7d2"
+      },
+      "outputs": [
+        {
+          "name": "stdout",
+          "output_type": "stream",
+          "text": [
+            "2/2 [==============================] - 0s 56ms/step\n"
+          ]
+        },
+        {
+          "data": {
+            "text/plain": [
+              "array([[0.9999261 ],\n",
+              "       [0.97606605],\n",
+              "       [0.4699473 ],\n",
+              "       [0.07587668],\n",
+              "       [0.97061783]], dtype=float32)"
+            ]
+          },
+          "execution_count": 236,
+          "metadata": {},
+          "output_type": "execute_result"
+        }
+      ],
+      "source": [
+        "pred = model.predict(validation_generator, steps = 2)\n",
+        "\n",
+        "pred[:5]"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "dd45ce6c",
+      "metadata": {
+        "id": "dd45ce6c"
+      },
+      "outputs": [],
+      "source": []
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "display_name": "Python 3 (ipykernel)",
+      "language": "python",
+      "name": "python3"
+    },
+    "language_info": {
+      "codemirror_mode": {
+        "name": "ipython",
+        "version": 3
+      },
+      "file_extension": ".py",
+      "mimetype": "text/x-python",
+      "name": "python",
+      "nbconvert_exporter": "python",
+      "pygments_lexer": "ipython3",
+      "version": "3.10.9"
+    },
+    "colab": {
+      "provenance": [],
+      "include_colab_link": true
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
